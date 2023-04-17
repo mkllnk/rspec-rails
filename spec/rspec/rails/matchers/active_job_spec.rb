@@ -94,6 +94,14 @@ RSpec.describe "ActiveJob matchers", skip: !RSpec::Rails::FeatureCheck.has_activ
       }.to have_enqueued_job.exactly(1)
     end
 
+    it "counts jobs even when others are removed" do
+      heavy_lifting_job.perform_later
+      expect {
+        perform_enqueued_jobs
+        hello_job.perform_later
+      }.to have_enqueued_job(hello_job)
+    end
+
     it "passes when negated" do
       expect { }.not_to have_enqueued_job
     end
